@@ -1,0 +1,15 @@
+{
+  "name": "node-server",
+  "version": "0.0.1",
+  "description": "node-server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "liwimoi",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "kafka-node": "^2.6.1"
+  }
+}
