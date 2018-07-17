@@ -141,12 +141,14 @@
                 pageSize
               }).then(res => {
                 const {result} = res;
-                page++;
-                loadData = false;
+                if (result.length > 0) {
+                  page++;
+                  loadData = false;
 
-                result.map(v => {
-                  $('#scroll_area').append(`<li>${v.id}</li>`)
-                })
+                  result.map(v => {
+                    $('#scroll_area').append(`<li>${v.id}</li>`)
+                  });
+                }
               })
 
             }
