@@ -1,9 +1,144 @@
-<html>
-        <body>
-                <form action="/purchase" method="post">
-                        <input type="text" id="username" name="username">
-                        <input type="text" id="amount" name="purchase_amount">
-                        <input type="submit" value="Purchase">
-                </form>
-        </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+
+</head>
+<body>
+    <style>
+        ul {
+            padding: 0;
+            width:100%;
+            height:200px;
+            overflow-x:hidden;
+            overflow-y: scroll;
+            border: 1px solid #ededed;
+        }
+
+        li {
+            list-style-type: none;
+            padding: 10px;
+            line-height: 50px;
+            border-bottom: 1px solid #ededed;
+        }
+    </style>
+
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous"></script>
+
+    <div>
+        <input type="text" id="username_ipt" name="username"/>
+        <input type="text" id="amount_ipt" name="purchase_amount"/>
+        <button id="purchase_btn">Purchase</button>
+    </div>
+
+    <div>
+        <button id="create_list_btn">create list item</button>
+        <span id="create_list_result"></span>
+    </div>
+
+    <div>
+        <button id="get_list_btn">getList</button>
+        <ul id="scroll_area">
+            <li>asdfads</li>
+            <li>asdfads</li>
+            <li>asdfads</li>
+            <li>asdfads</li>
+            <li>asdfads</li>
+            <li>asdfads</li>
+            <li>asdfads</li>
+        </ul>
+    </div>
+
+
+
+
+    <script>
+        $(document).ready(function(){
+          addEventListener();
+        });
+
+        function addEventListener() {
+          $('#purchase_btn').click(() => {
+            const url = '/purchase';
+            const userName = $('#username_ipt').val();
+            const amount = $('#amount_ipt').val();
+
+            if (userName.trim() === '') {
+              console.log('username is empty');
+              return;
+            }
+
+            if (amount.trim() === '') {
+              console.log('amount is empty');
+              return;
+            }
+
+            $.post(url, {
+              username: userName,
+              purchase_amount: amount
+            }).then((res) => {
+                const {result} = res;
+                if (result === 200) {
+                  console.log('ok');
+                }else {
+                  alert('error - /purchase');
+                }
+            });
+          })
+
+          $('#create_list_btn').click(()=> {
+            const $createListResult = $('#create_list_result');
+            $createListResult.html();
+            $.get('createList').then((res) => {
+              $createListResult.html(res.result);
+            });
+          })
+
+          $('#get_list_btn').click(() => {
+            const url = '/list';
+            $.post(url, {
+              page: 1,
+              pageSize: 60
+            }).then((res) => {
+                const data = res.result;
+                console.log(data);
+            });
+          })
+
+          let loadData = false;
+          let page = 1;
+          $('#scroll_area').scroll((e) => {
+            const {target}= e;
+            const {clientHeight, scrollTop, scrollHeight} = target;
+            const isEnd = scrollTop + clientHeight === scrollHeight;
+
+            if (isEnd && !loadData) {
+              // get ajax..
+              const url = '/list';
+              const pageSize = 10;
+
+              loadData = true;
+
+              $.post(url, {
+                page: page,
+                pageSize
+              }).then(res => {
+                const {result} = res;
+                page++;
+                loadData = false;
+
+                result.map(v => {
+                  $('#scroll_area').append(`<li>${v.id}</li>`)
+                })
+              })
+
+            }
+          });
+        }
+    </script>
+</body>
 </html>

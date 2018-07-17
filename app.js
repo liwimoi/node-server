@@ -1,5 +1,7 @@
 var express = require('express');
 var app = express();
+const {writeFileSync, readFileSync} = require('fs');
+
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
@@ -33,11 +35,45 @@ app.post('/purchase', function(req, res) {
                 console.log(data);
         });
         console.log(response);
-        res.redirect('/');
+        res.send({
+          result: 200,
+        })
 });
 
+app.post('/list', function(req, res){
+        let result;
+        const {page, pageSize} = req.body;
+        const firstIdx = (page - 1) * pageSize;
+        try {
+                result  = JSON.parse(readFileSync('./tmp/list.json', 'utf8'));
+                result = result.splice(firstIdx, pageSize);
+        } catch (e) {
+                console.log('read file error..');
+                res.send({
+                  result: []
+                });
+        }
+
+        res.send({
+          result: result
+        });
+});
+
+app.get('/createList', function(req, res){
+        console.log('createJSONFile..');
+        let listItems = [];
+        for (let i = 0; i < 60; i++) {
+                listItems.push({
+                  id: i + 1
+                });
+        }
+        const data = JSON.stringify(listItems, null, '\t');
+        writeFileSync('./tmp/list.json', data);
+        res.send({
+          result: 'creat..'
+        });
+});
 
 app.listen(3000, function() {
         console.log('test app listening on port 3000!');
 });
-
