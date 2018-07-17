@@ -141,10 +141,9 @@
                 pageSize
               }).then(res => {
                 const {result} = res;
+                loadData = false;
                 if (result.length > 0) {
                   page++;
-                  loadData = false;
-
                   result.map(v => {
                     $('#scroll_area').append(`<li>${v.id}</li>`)
                   });
